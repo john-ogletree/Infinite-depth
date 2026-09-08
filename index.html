@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>infinite-depth.jao.life</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0f;
+            color: #e0e0e0;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #content {
+            padding: 40px 24px 200px;
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 2.4;
+            font-size: 18px;
+            word-break: break-all;
+            min-height: 100vh;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            background: #0a0a0f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e1e2e;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2a2a3a;
+        }
+
+        @media (max-width: 600px) {
+            #content {
+                font-size: 15px;
+                padding: 24px 16px 160px;
+                line-height: 2.2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="content"></div>
+
+    <script>
+        (function() {
+            const content = document.getElementById('content');
+
+            const CHARS_PER_BATCH = 500;
+            const DEPTH_WORDS = [
+                'root', 'alpha', 'beta', 'gamma', 'delta', 'epsilon', 'zeta', 'eta', 'theta',
+                'iota', 'kappa', 'lambda', 'mu', 'nu', 'xi', 'omicron', 'pi', 'rho', 'sigma',
+                'tau', 'upsilon', 'phi', 'chi', 'psi', 'omega', 'folder', 'level', 'depth',
+                'infinite', 'void', 'abyss', 'trench', 'chasm', 'well', 'pit', 'core', 'nexus',
+                'cascade', 'torrent', 'rift', 'gate', 'shard', 'echo', 'phantom', 'obelisk',
+                'monolith', 'spire', 'abyss', 'zenith', 'nadir', 'cosmos', 'nebula', 'quasar',
+                'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'
+            ];
+
+            let isGenerating = false;
+
+            function generateBatch() {
+                if (isGenerating) return;
+                isGenerating = true;
+
+                let chunk = '';
+                for (let i = 0; i < CHARS_PER_BATCH; i++) {
+                    const r = Math.random();
+                    if (r < 0.10) {
+                        chunk += '/';
+                    } else if (r < 0.22) {
+                        chunk += DEPTH_WORDS[Math.floor(Math.random() * DEPTH_WORDS.length)];
+                        if (Math.random() > 0.4) chunk += '/';
+                    } else if (r < 0.48) {
+                        chunk += String.fromCharCode(97 + Math.floor(Math.random() * 26));
+                    } else if (r < 0.68) {
+                        chunk += String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                    } else if (r < 0.84) {
+                        chunk += String.fromCharCode(48 + Math.floor(Math.random() * 10));
+                    } else if (r < 0.95) {
+                        const sym = '!@#$%^&*()-_=+[]{}|;:,.<>?~';
+                        chunk += sym[Math.floor(Math.random() * sym.length)];
+                    } else {
+                        const emoji = ['🌀', '⚡', '✨', '🌊', '🕳️', '♾️', '💠', '◉', '⎔', '⬡', '𖦹', '✦', '✧'];
+                        chunk += emoji[Math.floor(Math.random() * emoji.length)];
+                    }
+                }
+
+                const frag = document.createDocumentFragment();
+                frag.appendChild(document.createTextNode(chunk));
+                content.appendChild(frag);
+                isGenerating = false;
+            }
+
+            function checkScroll() {
+                const bottom = window.scrollY + window.innerHeight;
+                const docHeight = document.documentElement.scrollHeight;
+                if (docHeight - bottom < 800) {
+                    // generate multiple batches to stay ahead
+                    for (let i = 0; i < 3; i++) {
+                        generateBatch();
+                    }
+                }
+            }
+
+            // Seed the page
+            for (let i = 0; i < 10; i++) {
+                generateBatch();
+            }
+
+            // Generate more as you scroll
+            window.addEventListener('scroll', checkScroll, { passive: true });
+
+            // Also generate on resize
+            let resizeTimer;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(checkScroll, 200);
+            });
+
+            // Initial check in case viewport is tall
+            setTimeout(checkScroll, 100);
+        })();
+    </script>
+</body>
+</html>
